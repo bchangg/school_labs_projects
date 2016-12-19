@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var word = prompt("Please enter a sequence of characters:");
+            var heading = document.createElement("h1");
+            heading.id = "heading";
+            document.body.appendChild(heading);
+
+            var index = 0;
+            while(word != null) {
+                if(checkPal(word, index)) {
+                    heading.innerText = "True";
+                } else {
+                    heading.innerText = "False";
+                }
+            }
+
+
+            function checkPal(word, index) {
+                var length = word.length - 1 - index;
+                if(word.charAt(index) == word.charAt(length - index)) {
+                    return checkPal(word, index++);
+                } else if(word.charAt(index) != word.charAt(length - index)) {
+                    return false;
+                } else if(index == (length - index) || index == (length/2)) {
+                    return true;
+                }
+            }
+        </script>
+    </body>
+</html>

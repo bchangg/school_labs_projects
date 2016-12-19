@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CPSC 1045 - Lab-13-Events-Mouse-Click-On-A-Button-Example-1</title>
+</head>
+<body>
+    <div    style = "width:500px;   height:300px; 
+                     margin:0 auto; padding:5px;">
+        <center><h1>CPSC 1045 - Lab-13-Events-Mouse-Click-On-A-Button-Example-1</h1></center>
+        <canvas id    = "canvasArea" 
+                width = "500"  height = "300" 
+                style = "border:2px solid black">
+
+        Your browser doesn't currently support HTML5 Canvas.
+        </canvas> 
+        
+        <button id="myButton">Click a Mouse Button</button>
+        <br>
+    </div>
+    <script>                   
+        var canvas = document.getElementById("canvasArea"); 
+        var cx = canvas.getContext("2d");
+        
+        var button = document.getElementById("myButton");
+        button.addEventListener("mousedown", function(event) {
+            if (event.which == 1)
+                cx.fillText("Left Button clicked.",50,100);
+            else if (event.which == 2)
+                cx.fillText("Middle Button clicked.",50,150);
+            else if (event.which == 3)
+                cx.fillText("Right Button clicked.",50,200);
+        });
+    </script>
+</body>
+</html>

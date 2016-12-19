@@ -1,0 +1,20 @@
+Day, Item, Cost
+1, Rent, -$550.00
+1, Utilities, -$30.00
+1, Work Monthly Pay, +$1415.40
+1, Skytrain, -$13.37
+2, Safeway, -$31.80
+5, Chevron, -$18.66
+6, Chevron, -$38.56
+10, Chevron, -$37.22
+14, Triple Os, -$3.29
+14, Grandpa, +$69.39
+17, 7-11, -$23.59
+18, All India Sweets, -$14.42
+18, Skytrain, -$17.64
+19, Roots Cafe, -$9.23
+20, Triple Os, -$39.48
+23, Triple Os, -$9.84
+23, Craigslist, +$16.29
+27, Chevron, -$33.73
+28, Safeway, -$22.24

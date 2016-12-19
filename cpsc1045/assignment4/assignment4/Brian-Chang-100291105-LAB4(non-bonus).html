@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+    //DECLARE CONSTANTS FOR USE WITHIN THE PROGRAM
+        const CANVAS_WIDTH = 400,
+                CANVAS_HEIGHT = 400,
+                SPIN_RATE = 200, //CHANGE THIS NUMBER TO CHANGE HOW FAST THE BALL SPINS
+                ANGULAR_VELOCITY = 1; //CHANGE THIS NUMBER TO CHANGE HOW MANY DEGREES THE BALL CHANGES PER CYCLE, THIS ALSO AFFECTS HOW FAST THE BALL SPINS. HOWEVER, IF THIS VARIABLE IS CHANGED, THE BALL WILL NOT ROTATE AS SMOOTHLY AND WILL JUMP
+
+
+    //DECLARE AND INSTANTIATE THE CANVAS ELEMENT
+        var canvas = document.createElement("canvas");
+        canvas.id = "ballCanvas";
+        document.body.appendChild(canvas);
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+        canvas.style = "border: 1px solid black";
+
+    //DECLARE THE CONTEXT OF THE CANVAS
+        var context = canvas.getContext("2d");
+
+    //DECLARE AND INSTANTIATE THE IMAGE
+        var ballImage = new Image();
+        ballImage.src = "SilverBall50px.png";
+
+    //ANIMATE THE SPINNING BALL
+        ballImage.onload = function() {
+            //declare variables for use upon load. The reason for this is because I want to grab the actual width and height of the ball, instead of hard coding it. If we change the picture that is supposed to be rotated, this program should, emphasis on should, still work to rotate whatever image is provided. I tested the program using the other two images provided, to no avail. I suspect that this is because the other two images are spritesheets.
+            var ballWidth = ballImage.width,
+                ballHeight = ballImage.height,
+
+            //TODO: here I declared two random x and y variables because I didn't want the ball to always be instantiated
+                randomX = Math.floor((Math.random()*(CANVAS_WIDTH/2)+1)-ballWidth),
+                randomY = Math.floor((Math.random()*(CANVAS_HEIGHT/2)+1)-ballHeight);
+
+                if(randomX < 0) {
+                    randomX += ballWidth;
+                }
+                if(randomY < 0) {
+                    randomY += ballHeight;
+                }
+
+            //now we will draw the image and rotate it
+            setInterval(function() {
+                //clear a rectangle where the image is
+                context.clearRect(0,0,CANVAS_WIDTH,CANVAS_WIDTH);
+                //draw the image
+                context.drawImage(ballImage,randomX,randomY);
+                //translate the contex to the center of the canvas
+                context.translate(CANVAS_WIDTH/2,CANVAS_HEIGHT/2);
+                //rotate the context
+                context.rotate(ANGULAR_VELOCITY*Math.PI/180);
+                //put the context back
+                context.translate(-CANVAS_WIDTH/2,-CANVAS_HEIGHT/2);
+                //draw the rotated image
+                context.drawImage(ballImage,randomX,randomY);
+            }, SPIN_RATE);
+        }
+
+    </script>
+    </body>
+</html>

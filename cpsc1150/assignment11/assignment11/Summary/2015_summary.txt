@@ -1,0 +1,10 @@
+Month           Net Earning/Spending
+====================================
+January         +$928.99
+December        +$595.19
+February        +$832.13
+April           +$262.12
+June            +$464.97
+July            +$399.18
+August          +$258.44
+September       +$513.22

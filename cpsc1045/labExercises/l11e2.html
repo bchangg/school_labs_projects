@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var canvas = document.createElement("canvas");
+            canvas.id = "blah";
+            document.body.appendChild(canvas);
+            canvas.width = 500;
+            canvas.height = canvas.width;
+
+            var context = canvas.getContext("2d");
+
+            var xStart = Number(prompt("Where do you want to start drawing (x)?")),
+                yStart = Number(prompt("And your (y) position?")),
+                x1 = Number(prompt("First vertex (x):")),
+                y1 = Number(prompt("First vertex (y):")),
+                x2 = Number(prompt("Second vertex (x):")),
+                y2 = Number(prompt("Second vertex (y):"));
+
+            drawTriangle(context,xStart,yStart,x1,y1,x2,y2);
+
+            function drawTriangle(context, xStart, yStart, x1, y1, x2, y2) {
+                context.beginPath();
+                context.moveTo(xStart,yStart);
+                context.lineTo(x1,y1);
+                context.lineTo(x2,y2);
+                context.closePath();
+                context.stroke();
+                context.fill();
+            }
+
+        </script>
+
+    </body>
+</html>

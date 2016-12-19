@@ -1,0 +1,19 @@
+Day, Item, Cost
+1, Rent, -$550.00
+1, Utilities, -$30.00
+1, Work Monthly Pay, +$1053.92
+1, Tim Hortons, -$7.98
+4, Roots Cafe, -$4.80
+6, 7-11, -$36.43
+10, Triple Os, -$16.99
+10, Grandpa, +$27.98
+10, Ten Ren Bubble Tea, -$22.77
+10, 7-11, -$10.54
+12, Roots Cafe, -$9.92
+12, Chevron, -$8.85
+16, Ten Ren Bubble Tea, -$22.29
+19, Roots Cafe, -$2.65
+19, Lottery, +$12.68
+22, Grandpa, +$76.77
+26, Roots Cafe, -$25.13
+27, Chevron, -$23.82

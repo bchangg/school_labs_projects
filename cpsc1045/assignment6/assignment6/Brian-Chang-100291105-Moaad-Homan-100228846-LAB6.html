@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>CPSC 1045 - LAB6 SLIDING PUZZLE</title>
+        <h1 style="text-align: center">Sliding Puzzle</h1>
+    </head>
+    <body>
+        <table style="margin: 0 auto" id="gameFrameWork">
+            <tr id="row1">
+                <td style="border: 1px solid black">
+                    <canvas id="zero" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="one" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="two" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+            </tr>
+            <tr id="row2">
+                <td style="border: 1px solid black">
+                    <canvas id="three" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="four" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="five" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+            </tr>
+            <tr id="row3">
+                <td style="border: 1px solid black">
+                    <canvas id="six" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="seven" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+                <td style="border: 1px solid black">
+                    <canvas id="eight" width="170" height="170" style="margin: 0 auto; display: block" onmouseover="fillColors(this.id)" onmouseout="removeColor(this.id)"></canvas>
+                </td>
+            </tr>
+        </table>
+
+        <div style="text-align: center" id="infoWrapper">
+            <button type="button" id="startButton" name="button" onclick="initializeGame()" style="margin: 0 auto; display: block">START GAME</button>
+            <div style="display: inline-block; text-align: left; width:526px" id="information">
+                <p>
+                    Moves: <span id="numMoves"></span>
+                    <br>
+                    Time since start: <span id="timeSinceStart"></span>
+                </p>
+
+            </div>
+        </div>
+
+        <script type="text/javascript">
+        //declare two constants to control the size of all the canvases
+        const CANVAS_HEIGHT = 170, CANVAS_WIDTH = 170;
+
+        //these variables are to log the moves the user has made, and the time elapsed since the beginning of play
+        var moves = 0;
+        var done = false;
+        var hours = 0, min = 0, sec = 0;
+
+        //this function will start the stopwatch that we use to time the player. The stopwatch will not be stopped from this point onwards
+        function startStopwatch() {
+            setInterval(function() {
+                if(done) {
+                    return;
+                }
+                sec++;
+                if(sec == 60) {
+                    min++;
+                    sec = 0;
+                }
+                if(min == 60) {
+                    hours++;
+                    min = 0;
+                }
+                document.getElementById("timeSinceStart").innerHTML = hours + ":" + min + ":" + sec;
+            }, 1000);
+        }
+
+        //declare new array of size 9
+        //we can use this array to reference to each canvas very quickly, by calling context[arrayNumber - 1]
+        var context = new Array(9);
+        var context = [
+            document.getElementById("zero").getContext("2d"), document.getElementById("one").getContext("2d"), document.getElementById("two").getContext("2d"), document.getElementById("three").getContext("2d"), document.getElementById("four").getContext("2d"), document.getElementById("five").getContext("2d"), document.getElementById("six").getContext("2d"), document.getElementById("seven").getContext("2d"), document.getElementById("eight").getContext("2d")
+        ];
+
+        //these variables here will tell us what moves are available to the canvas.
+        //the page is laid out in a
+        // 0    1    2
+        // 3    4    5
+        // 6    7    8
+        // manner. The numbers are all canvas IDs
+        var zero_moves   = [context[1],context[3]],
+            one_moves   = [context[0],context[2],context[4]],
+            two_moves = [context[1],context[5]],
+            three_moves  = [context[0],context[4],context[6]],
+            four_moves  = [context[1],context[3],context[5],context[7]],
+            five_moves   = [context[2],context[4],context[8]],
+            six_moves = [context[3],context[7]],
+            seven_moves = [context[6],context[4],context[8]],
+            eight_moves  = [context[5],context[7]];
+
+        //declare an array of objects that we can later reference to find out what moves the canvas can make, and also grab its context
+        var canvas = new Array(9);
+        canvas[0] = {context: context[0],
+                     moves: zero_moves,
+                     value: 8};
+        canvas[1] = {context: context[1],
+                     moves: one_moves,
+                     value: 8};
+        canvas[2] = {context: context[2],
+                     moves: two_moves,
+                     value: 8};
+        canvas[3] = {context: context[3],
+                     moves: three_moves,
+                     value: 8};
+        canvas[4] = {context: context[4],
+                     moves: four_moves,
+                     value: 8};
+        canvas[5] = {context: context[5],
+                     moves: five_moves,
+                     value: 8};
+        canvas[6] = {context: context[6],
+                     moves: six_moves,
+                     value: 8};
+        canvas[7] = {context: context[7],
+                     moves: seven_moves,
+                     value: 8};
+        canvas[8] = {context: context[8],
+                     moves: eight_moves,
+                     value: 8};
+
+        //this function checks if the array passed in has any blank canvases, aka if we can move the current number to another canvas
+        function canMove(moveArray) {
+            for(var i = 0; i < moveArray.length; i++) {
+                if(isBlank(moveArray[i].canvas)) {
+                    return true;
+                }
+            }
+        }
+
+        //this removes the start button, and appends a new restart button to the bottom of the page
+        function initializeGame() {
+            var startButton = document.getElementById("startButton");
+            document.getElementById("infoWrapper").removeChild(startButton);
+
+            var restartButton = document.createElement("button");
+            restartButton.id = "restartButton";
+            restartButton.innerHTML = "RESTART GAME";
+            restartButton.addEventListener("click", fillBoxes);
+            document.getElementById("information").appendChild(restartButton);
+
+            fillBoxes();
+            startStopwatch();
+        }
+
+        //add the onclick event listener/attribute to all the canvas object canvases
+        function addOnClick() {
+            for(var i = 0; i < canvas.length; i++) {
+                canvas[i].context.canvas.setAttribute("onclick", "move(this.id)");
+            }
+        }
+
+        //initilize the stopwatch. This will be executed each time we start/restart the game, resetting the stopwatch to 0
+        function initializeStopwatch() {
+            hours = 0, min = 0, sec = 0;
+            document.getElementById("timeSinceStart").innerHTML = hours + ":" + min + ":" + sec;
+            if(done) {
+                done = false;
+            }
+        }
+
+        //initilize moves. This will reset moves to 0, and print it out
+        function initializeMoves() {
+            moves = 0;
+            document.getElementById("numMoves").innerHTML = moves;
+        }
+
+        //this function will fill in all the boxes for the game randomly, it is called every time we hit the button "RESTART GAME"
+        function fillBoxes() {
+            addOnClick();
+            initializeStopwatch();
+            initializeMoves();
+
+            var randomNumbers = generateRandomIntArray();
+            for(var i = 0; i < context.length; i++) {
+                wipeCanvas(canvas[i].context);
+            }
+            while(randomNumbers.length > 0) {
+                var random = Math.floor(Math.random()*9);
+                var prevRandom = new Array(8); //keep track of the boxes we've already drawn on
+                if(isBlank(canvas[random].context.canvas) && prevRandom.indexOf(random) == -1) {
+                    prevRandom.push(random); //push the current box we're drawing on to our history of drawn boxes so we know what has already been filled
+                    var num = randomNumbers.pop(); //only decrement the while loop condition when we actually draw to the canvas
+                    fillNumber(canvas[random].context, num);
+                    canvas[random].value = num-1;
+                }
+            }
+            for(var i = 0; i < canvas.length; i++) {
+                if(isBlank(canvas[i].context.canvas)) {
+                    canvas[i].value = 8;
+                }
+            }
+        }
+
+
+        //this function will check if the canvas you feed into it is blank or not. If it is, the function will return true, otherwise it will return false
+        function isBlank(canvas) { //@see: https://stackoverflow.com/questions/17386707/how-to-check-if-a-canvas-is-blank
+            var blank = document.createElement("canvas");
+            blank.width = CANVAS_WIDTH;
+            blank.height = CANVAS_HEIGHT;
+            return canvas.toDataURL() == blank.toDataURL();
+        }
+
+        //this function will draw a number into roughly the middle of the canvas, given the context of the canvas and the number you want to draw as an integer
+        function fillNumber(context, num) {
+            context.font = "30px Verdana";
+            context.fillText(num, CANVAS_WIDTH/2-10,CANVAS_HEIGHT/2+10);
+        }
+
+        //this function will generate a random array of integers between 1-8
+        function generateRandomIntArray() {
+            var randomArr = new Array(8), randomNum = Math.floor(Math.random()*8) + 1;
+            for(var index = 0; index < 8; index++) {
+                while(randomArr.indexOf(randomNum) != -1) {
+                    randomNum = Math.floor(Math.random()*8) + 1;
+                }
+                randomArr[index] = randomNum;
+            }
+            return randomArr;
+        }
+
+        //clears the given canvas
+        function wipeCanvas(context) {
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+        }
+
+        //get the correct canvas object using the canvas ID that is currently being operated on in the HTML
+        function getCanvasObject(id) {
+            if(id == "zero") {
+                return canvas[0];
+            } else if(id == "one") {
+                return canvas[1];
+            } else if(id == "two") {
+                return canvas[2];
+            } else if(id == "three") {
+                return canvas[3];
+            } else if(id == "four") {
+                return canvas[4];
+            } else if(id == "five") {
+                return canvas[5];
+            } else if(id == "six") {
+                return canvas[6];
+            } else if(id == "seven") {
+                return canvas[7];
+            } else if(id == "eight") {
+                return canvas[8];
+            }
+        }
+
+        //fill in the correct color based on the ID of the canvas that is currently being hovered over
+        function fillColors(canvasId) {
+            var currentCanvas = getCanvasObject(canvasId);
+            if(canMove(currentCanvas.moves) && !isBlank(currentCanvas.context.canvas)) {
+                document.getElementById(canvasId).parentElement.style = "border: 1px solid black; background-color: green";
+            } else if(isBlank(currentCanvas.context.canvas)) {
+                document.getElementById(canvasId).parentElement.style = "border: 1px solid black; background-color: transparent";
+            } else {
+                document.getElementById(canvasId).parentElement.style = "border: 1px solid black; background-color: red";
+            }
+        }
+
+        //remove the color in the canvas that we just left
+        function removeColor(canvasId) {
+            document.getElementById(canvasId).parentElement.style = "border: 1px solid black; background-color: transparent";
+        }
+
+        //move the canvas if it can be moved
+        function move(canvasId) {
+            var currentCanvas = getCanvasObject(canvasId);
+            for(var i = 0; i < currentCanvas.moves.length; i++) {
+                if(isBlank(currentCanvas.moves[i].canvas)) {
+                    moves++;
+                    document.getElementById("numMoves").innerHTML = moves;
+                    var currentValue = currentCanvas.value;
+                    var moveToCanvas = getCanvasObject(currentCanvas.moves[i].canvas.id);
+                    currentCanvas.value = moveToCanvas.value;
+                    moveToCanvas.value = currentValue;
+
+                    wipeCanvas(currentCanvas.moves[i]);
+                    currentCanvas.moves[i].drawImage(currentCanvas.context.canvas, 0, 0);
+                    wipeCanvas(currentCanvas.context);
+                }
+            }
+            checkDone();
+            console.log(done);
+        }
+
+        //checks for the done condition, if all the numbers in the canvases are in their correct positions
+        function checkDone() {
+            var sortedValueArray = new Array(9);
+            for(var i = 0; i < sortedValueArray.length; i++) {
+                sortedValueArray[i] = canvas[i].value;
+            }
+            var correct = [0,1,2,3,4,5,6,7,8];
+            if(sortedValueArray[0] == correct[0] && sortedValueArray[1] == correct[1] && sortedValueArray[2] == correct[2] && sortedValueArray[3] == correct[3] && sortedValueArray[4] == correct[4] && sortedValueArray[5] == correct[5] && sortedValueArray[6] == correct[6] && sortedValueArray[7] == correct[7] && sortedValueArray[8] == correct[8]) {
+                done = true;
+            }
+        }
+
+        function removeClick() {
+            if(done) {
+                for(var i = 0; i < canvas.length; i++) {
+                    canvas[i].context.canvas.removeAttribute("onclick");
+                }
+            }
+        }
+
+        </script>
+    </body>
+</html>

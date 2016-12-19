@@ -1,0 +1,8 @@
+Lab #0
+PART II-PAGE I
+Research Questions:
+1) The text in the <title> tag shows up as the title of the tab, whereas the <h1> tag shows up at the top of tha page as the "title" of the page.
+2) Look at the name of the tab and see what it says.
+
+PART VI
+I didn't use jpeg images because I figured they were a little boring. Isn't this GIF hilarious? I also made it a little bigger than I was supposed to so you can see it easier. I hope marks don't get taken off because of this.

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var p1 = document.createElement("p");
+            p1.id = "p1";
+
+            var n = Number(prompt("Please enter a positive integer:"));
+            checkN(n);
+
+            var outputString = "You have entered " + n + " as your input.\nThe probability of two people having the same birthday in a group of " + n + " people is ";
+
+            outputString += probability(n);
+
+            function checkN(num) {
+                while(num < 0 || isNaN(num)) {
+                    alert("You have entered an invalid number. Please enter positive integer.")
+                    num = Number(prompt("Please enter a positive integer:"));
+                    n = num;
+                }
+            }
+
+            function factorial(num) {
+                if(num < 0) {
+                    return -1;
+                } else if(num == 0) {
+                    return 1;
+                } else {
+                    return (num*factorial(num-1));
+                }
+            }
+
+            function probability(num) {
+                return 1-(factorial(num)/factorial(Math.pow(365,num)*(365-num)));
+            }
+
+        </script>
+    </body>
+</html>

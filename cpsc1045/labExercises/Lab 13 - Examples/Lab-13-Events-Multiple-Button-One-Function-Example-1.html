@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CPSC 1045 - Lab-13-Events-Multiple-Button-One-Function-Example-1</title>
+</head>
+<body>
+<button id="myButton1" value="1">Start</button>
+<button id="myButton2" value="2">End</button>
+<button id="myButton3" value="3">Clear</button>
+
+<script>                   
+
+    window.onload = function()
+    { 
+        document.addEventListener("click", function(event) {
+            console.log(event);  // this will show the event
+            console.log(event.target.id);  // this will give you 'id' attribute
+        });
+    }
+    
+</script>
+</body>
+</html>

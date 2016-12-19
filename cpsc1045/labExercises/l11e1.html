@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            const C = 299792458;
+
+            var m = Number(prompt("Please enter a number for mass:"));
+
+            var E = calculate(m);
+
+            console.log(E);
+
+            function calculate(mass) {
+                var result = mass*Math.pow(C,2);
+                return result;
+            }
+        </script>
+
+    </body>
+</html>

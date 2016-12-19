@@ -1,0 +1,17 @@
+Day, Item, Cost
+1, Rent, -$550.00
+1, Utilities, -$30.00
+1, Work Monthly Pay, +$1688.21
+1, Chevron, -$18.53
+5, Skytrain, -$5.72
+6, Ten Ren Bubble Tea, -$35.92
+7, H&M, -$16.01
+11, Tim Hortons, -$38.05
+13, Craigslist, +$28.09
+16, 7-11, -$37.10
+20, Ten Ren Bubble Tea, -$19.03
+20, Skytrain, -$15.35
+21, Roots Cafe, -$24.60
+25, Skytrain, -$38.44
+25, Roots Cafe, -$21.70
+26, Safeway, -$33.72

@@ -1,0 +1,19 @@
+Day, Item, Cost
+1, Rent, -$550.00
+1, Utilities, -$30.00
+1, Work Monthly Pay, +$1117.95
+1, Triple Os, -$15.14
+5, Roots Cafe, -$9.20
+7, Tim Hortons, -$38.15
+8, Transfer from roommates, +$90.02
+11, All India Sweets, -$9.74
+11, Ten Ren Bubble Tea, -$20.23
+12, All India Sweets, -$39.32
+16, Skytrain, -$39.71
+18, Roots Cafe, -$30.83
+19, Triple Os, -$13.59
+21, Safeway, -$13.43
+21, Chevron, -$18.36
+24, Tim Hortons, -$9.98
+28, All India Sweets, -$2.24
+28, Tim Hortons, -$5.35

@@ -1,0 +1,54 @@
+PART I a)
+This piece of code first declare num as a NaN. This allows the while loop to execute. Inside this while loop, the program will prompt the user to enter a positive number, assign it to a variable called temp, then convert it to a number and store it in num. If the resulting num is not a number, or if it is less than 0, then the program will loop back and not exit the while loop. It will only exit when the user has entered a positive number.
+
+PART I b)
+1) This code fragment will print out the following in the HTML document:
+5<br>10<br>15<br>20<br>25<br>30<br>35<br>40<br>45<br>50<br> (I didn't use a new line for each break because it would take up too much space in this document submission)
+
+2) This piece will do the same thing as the above, except it will not print out 50<br> since the condition is i<50.
+
+3) Code fragment A will accomplish the task neater. It is easier to keep track of where the i variable is at when you have it in the for loop declaration.
+
+PART I c)
+Hello Loops!
+Hello Loops!
+
+PART II a)
+var grade = Number(prompt("Please enter your numeric average:"));
+
+while(isNaN(grade) || grade < 0 || grade == "") {
+    if (grade == 0) {
+        break;
+    }
+    alert("You have entered an invalid number.");
+    grade = Number(prompt("Please enter your numeric average:"));
+}
+
+while(grade != 0) {
+    if(grade > 73) {
+        console.log("Your grade is satisfactory.");
+    } else if(grade < 73) {
+        console.log("Your grade is unsatisfactory.");
+    } else {
+        alert("You have entered an invalid number.");
+    }
+    grade = Number(prompt("Please enter your numeric average:"));
+}
+
+PART II b)
+var num = Number(prompt("Please enter a number:"));
+
+while(isNaN(num)) {
+    num = Number(prompt("Please enter a number:"));
+}
+while(num > 0 || num == 0) {
+    var sum = 1;
+    for(var i = 2; i <= num; i++) {
+        sum *= i;
+    }
+    console.log(sum);
+    num = Number(prompt("Please enter a number:"));
+}
+
+PART II c)
+Declare sum = 0 instead of just sum. Add number++ inside the do while loop.

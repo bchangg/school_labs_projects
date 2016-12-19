@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<title>CPSC 1045 - Lab #2</title>
+
+<body id="body">
+  <h1>CPSC 1045 - Lab #2 - What Province WebApp</h1>
+
+<script>
+
+window.onload = function() {
+// Add your JavaScript code here
+  var userArea = prompt("Please enter your 3-digit area code:");
+
+  document.getElementById("body").innerHTML += "<p>Your Area Code: " + userArea;
+
+  if(userArea == 403 || userArea == 587 || userArea == 780) { //checks the userArea against all the provinces. If it doesn't find a mathc, the statement tells the user that his/her area code is not from Western Canada
+    document.getElementById("body").innerHTML += "You are from Alberta!</p>";
+  } else if(userArea == 236 || userArea == 250 || userArea == 604 || userArea == 778) {
+    document.getElementById("body").innerHTML += "You are from British Columbia!</p>"
+  } else if(userArea == 204 || userArea == 431) {
+    document.getElementById("body").innerHTML += "You are from Manitoba!</p>"
+  } else if(userArea == 306 || userArea == 639) {
+    document.getElementById("body").innerHTML += "You are from Saskatchewan!</p>"
+  } else if(userArea == 867) {
+    document.getElementById("body").innerHTML += "You are from the Yukon!</p>"
+  } else {
+    document.getElementById("body").innerHTML += "Sorry - your area code : " + userArea + " is not from Western Canada!</p>"
+  }
+
+
+
+// End your Javascript before this line
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+Day, Item, Cost
+1, Rent, -$550.00
+1, Utilities, -$30.00
+1, Work Monthly Pay, +$1338.00
+1, Roots Cafe, -$3.05
+1, Tim Hortons, -$20.62
+3, Roots Cafe, -$5.91
+4, H&M, -$19.74
+4, Chevron, -$6.11
+8, All India Sweets, -$28.44
+10, Roots Cafe, -$35.02
+13, Tim Hortons, -$14.72
+17, Ten Ren Bubble Tea, -$26.50
+19, All India Sweets, -$24.50
+22, Roots Cafe, -$20.31
+23, Ten Ren Bubble Tea, -$25.95
+27, H&M, -$13.91
