@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hotel Safe App</title>
+        <h1>FINAL EXAM WEBAPP - HOTEL SAFE</h1>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td><input style="width: 59px; height: 30px" id="leftUp" type="button" value="UP"></td>
+                <td><input style="width: 59px; height: 30px" id="midUp" type="button" value="UP"></td>
+                <td><input style="width: 59px; height: 30px" id="rightUp" type="button" value="UP"></td>
+                <td><input style="width: 65px; height: 30px; background-color: grey" id="setButton" type="button" value="SET"></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black"><canvas id="left" width="60" height="60"></canvas></td>
+                <td style="border: 1px solid black"><canvas id="mid" width="60" height="60"></canvas></td>
+                <td style="border: 1px solid black"><canvas id="right" width="60" height="60"></canvas></td>
+                <td style="border: 1px solid black"><canvas id="set" width="60" height="60"></canvas></td>
+            </tr>
+            <tr>
+                <td><input style="width: 59px; height: 30px" id="leftDown" type="button" value="DOWN"></td>
+                <td><input style="width: 59px; height: 30px" id="midDown" type="button" value="DOWN"></td>
+                <td><input style="width: 59px; height: 30px" id="rightDown" type="button" value="DOWN"></td>
+            </tr>
+        </table>
+        <script type="text/javascript">
+            //get canvases
+            var left = document.getElementById("left"),
+                mid = document.getElementById("mid"),
+                right = document.getElementById("right"),
+                setCanvas = document.getElementById("set");
+            //get contexts for canvases
+            var leftCtx = left.getContext("2d");
+                midCtx = mid.getContext("2d"),
+                rightCtx = right.getContext("2d"),
+                setCtx = setCanvas.getContext("2d");
+            var leftNum,
+                midNum,
+                rightNum,
+                setNum;
+            //get upper row buttons
+            var lu = document.getElementById("leftUp"),
+                mu = document.getElementById("midUp"),
+                ru = document.getElementById("rightUp"),
+                setB = document.getElementById("setButton");
+            //get lower row buttons
+            var ld = document.getElementById("leftDown"),
+                md = document.getElementById("midDown"),
+                rd = document.getElementById("rightDown");
+
+            var theCode;
+            var set = false;
+            var audit = [];
+
+            init();
+
+            function init() {
+                leftNum = 0;
+                rightNum = 0;
+                midNum = 0;
+                setNum = "#";
+                drawSymbol(leftCtx,leftNum);
+                drawSymbol(midCtx,midNum);
+                drawSymbol(rightCtx,rightNum);
+                drawSymbol(setCtx,setNum);
+                //ADD EVENT LISTENERS TO THE TOP ROW BUTTONS
+                lu.addEventListener("click",function() {
+                    if(leftNum < 9) {
+                        leftNum++;
+                    }
+                    drawSymbol(leftCtx,leftNum);
+                });
+                mu.addEventListener("click",function() {
+                    if(midNum < 9) {
+                        midNum++;
+                    }
+                    drawSymbol(midCtx,midNum);
+                });
+                ru.addEventListener("click",function() {
+                    if(rightNum < 9) {
+                        rightNum++;
+                    }
+                    drawSymbol(rightCtx,rightNum);
+                });
+                setB.addEventListener("click",enable);
+                setCanvas.addEventListener("click",save);
+                //ADD EVENT LISTENERS TO THE BOTTOM ROW BUTTONS
+                ld.addEventListener("click",function() {
+                    if(leftNum > 0) {
+                        leftNum--;
+                    }
+                    drawSymbol(leftCtx,leftNum);
+                });
+                md.addEventListener("click",function() {
+                    if(midNum > 0) {
+                        midNum--;
+                    }
+                    drawSymbol(midCtx,midNum);
+                });
+                rd.addEventListener("click",function() {
+                    if(rightNum > 0) {
+                        rightNum--;
+                    }
+                    drawSymbol(rightCtx,rightNum);
+                });
+            }
+
+            function save() {
+                var i = 1;
+                if(set && (leftNum != 0 || midNum != 0 || rightNum != 0)) {
+                    var clear = setInterval(function() {
+                        console.log("entered");
+                        leftCtx.clearRect(0,0,leftCtx.canvas.width,leftCtx.canvas.height);
+                        midCtx.clearRect(0,0,midCtx.canvas.width,midCtx.canvas.height);
+                        rightCtx.clearRect(0,0,rightCtx.canvas.width,rightCtx.canvas.height);
+                    }, 400);
+                    var draw = setInterval(function() {
+                        if(i > 0) {
+                            i--;
+                        } else {
+                            clearInterval(clear);
+                            clearInterval(draw);
+                        }
+                        drawSymbol(leftCtx,leftNum);
+                        drawSymbol(midCtx,midNum);
+                        drawSymbol(rightCtx,rightNum);
+                    }, 800);
+                    theCode = [leftNum,midNum,rightNum];
+                    setB.value = "LOCKED";
+                    setB.removeEventListener("click",enable);
+                    setCanvas.removeEventListener("click",save);
+                    setCanvas.addEventListener("click",unlock);
+                    setTimeout(resetAll, 2000);
+                }
+            }
+
+            function unlock() {
+                var i = 1;
+                if(leftNum == theCode[0] && midNum == theCode[1] && rightNum == theCode[2]) {
+                    var clear = setInterval(function() {
+                        console.log("entered");
+                        leftCtx.clearRect(0,0,leftCtx.canvas.width,leftCtx.canvas.height);
+                        midCtx.clearRect(0,0,midCtx.canvas.width,midCtx.canvas.height);
+                        rightCtx.clearRect(0,0,rightCtx.canvas.width,rightCtx.canvas.height);
+                    }, 400);
+                    var draw = setInterval(function() {
+                        if(i > 0) {
+                            i--;
+                        } else {
+                            clearInterval(clear);
+                            clearInterval(draw);
+                        }
+                        drawSymbol(leftCtx,leftNum);
+                        drawSymbol(midCtx,midNum);
+                        drawSymbol(rightCtx,rightNum);
+                    }, 800);
+                    setB.value = "SET";
+                    setB.addEventListener("click",enable);
+                    setCanvas.removeEventListener("click",unlock);
+                    setCanvas.addEventListener("click",save);
+                    setTimeout(resetAll, 2000);
+                } else {
+                    var current = [leftNum,midNum,rightNum];
+                    if(audit.length < 11) {
+                        audit.push(current);
+                    }
+                    console.log(audit);
+                }
+            }
+
+            function enable() {
+                set = true;
+            }
+
+            function resetAll() {
+                leftNum = 0;
+                midNum = 0;
+                rightNum = 0;
+                drawSymbol(leftCtx,leftNum);
+                drawSymbol(midCtx,midNum);
+                drawSymbol(rightCtx,rightNum);
+            }
+
+            function drawSymbol(context,number) {
+                context.clearRect(0,0,context.canvas.width,context.canvas.height);
+                context.fillStyle = "black";
+                context.font = "60px arial";
+                context.fillText(number,13,53);
+            }
+
+        </script>
+
+    </body>
+</html>

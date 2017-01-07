@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+    </body>
+
+    <script type="text/javascript">
+        const CANVAS_WIDTH = 300,
+                CANVAS_HEIGHT = 300;
+                FRAME_UPDATE = 20; //CHANGE THIS VARIABLE TO SEE THE COIN SPIN AT DIFFERENT SPEEDS
+
+        var canvas = document.createElement("canvas");
+        canvas.id = "walkerAnimation";
+        document.body.appendChild(canvas);
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        var context = canvas.getContext("2d");
+
+        var coinImage = new Image();
+        coinImage.src = "coin-sprite-sheet.png";
+
+        var frameWidth = 44,
+            frameHeight = 40;
+            totalFrames = 10;
+
+        coinImage.onload = function() {
+            var frame = 0;
+
+            setInterval(function() {
+                context.clearRect(128,130,frameWidth,frameWidth);
+                context.drawImage(
+                        coinImage,
+                        (frame*frameWidth), 0, frameWidth, frameHeight,
+                        128, 130, frameWidth, frameWidth
+                );
+                frame = ++frame % totalFrames;
+            }, FRAME_UPDATE);
+        }
+    </script>
+</html>

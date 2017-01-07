@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<style media="screen">
+</style>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PONG</title>
+    </head>
+    <body style="background-color: black;" align="center">
+        <table style="margin: 0 auto;">
+            <tr>
+                <td id="info"></td>
+            </tr>
+            <tr>
+                <td id="score"></td>
+            </tr>
+            <tr>
+                <td id="game" style="border: 1px solid white;"></td>
+            </tr>
+        </table>
+        <script type="text/javascript">
+            //DECLARE CONSTANTS FOR USE LATER IN THE PROGRAM
+            const CANVAS_WIDTH = 500,
+                  CANVAS_HEIGHT = 500;
+            const INITIAL_LIVES = 5;
+            const BALL_SPEED_INCR = 0.5;
+
+            //DECLARE SOUND VARIABLES
+            var beep = new Audio("sounds_ping_pong_8bit/ping_pong_8bit_beeep.ogg");
+            var peep = new Audio("sounds_ping_pong_8bit/ping_pong_8bit_peeeeeep.ogg");
+            var plop = new Audio("sounds_ping_pong_8bit/ping_pong_8bit_plop.ogg");
+
+            //DECLARE A WIN VARIABLE TO DETECT WIN CONDITION
+            var win;
+
+            //INSTANTIATE NEW CANVAS ELEMENTS FOR THE INFORMATION BOARD, SCOREBOARD, AND THE GAMEFRAME
+            //also grab the contexts of each one and set them to info, score, and game respectively
+            var infoBoard = document.createElement("canvas");
+            var info = infoBoard.getContext("2d");
+            infoBoard.width = CANVAS_WIDTH;
+            infoBoard.height = CANVAS_HEIGHT/4;
+            document.getElementById("info").appendChild(infoBoard);
+            var scoreBoard = document.createElement("canvas");
+            var score = scoreBoard.getContext("2d");
+            scoreBoard.width = CANVAS_WIDTH;
+            scoreBoard.height = CANVAS_HEIGHT/6;
+            document.getElementById("score").appendChild(scoreBoard);
+            var gameFrame = document.createElement("canvas");
+            var game = gameFrame.getContext("2d");
+            gameFrame.width = CANVAS_WIDTH;
+            gameFrame.height = CANVAS_HEIGHT;
+            document.getElementById("game").appendChild(gameFrame);
+
+            //INITIALIZE THE GAME
+            init();
+
+            //this function will initialize everything that has to do with the GAME
+            function init() {
+                win = false; //set win to be false as the game just started
+                if(document.getElementById("resetButton")) {
+                    document.getElementById("muteButton").remove(); //this is to check if we have a button at the very end from a recent win. If we do, remove it
+                    document.getElementById("resetButton").remove();
+                }
+                var muteButton = document.createElement("input");
+                muteButton.type = "button";
+                muteButton.value = "MUTE/UNMUTE";
+                muteButton.id = "muteButton";
+                muteButton.addEventListener("click", mute);
+                document.body.appendChild(muteButton);
+                //clear everything on every canvas, we're initializing things. Can't have old stuff mess with the new stuff.
+                info.clearRect(0,0,infoBoard.width,infoBoard.height);
+                score.clearRect(0,0,scoreBoard.width,scoreBoard.height);
+                game.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+                writeGameIntro(); //fill in the infoBoard with information as to how the game works
+                game.fillStyle = "white"; //change fillstyle to white so everyhing comes out white
+                writeArial(game,"FOUR PERSON","bold 50px",80,40); //write in the different things that appear on the home screen
+                writeArial(game,"PONG","bold 170px",-1,280);
+                writeArial(game,"START","20px",213,471);
+                //these variables are for an invisible "box" in which we will mouseover and change the colour of the START with
+                var boxX = 212,
+                    boxY = 452,
+                    boxWidth = 70,
+                    boxHeight = 21;
+                //this function will simulate a "click" on the canvas when you mousedown on the START
+                var simulateButtonDown = function() {
+                    game.clearRect(boxX-2,boxY-2,boxWidth+4,boxHeight+4);
+                    game.fillStyle = "white";
+                    writeArial(game,"START","20px",213,473); //CHANGE HEIGHT OF "START" HERE
+                }
+                //this button will reset the start button if the mouse leaves the canvas
+                var resetStartButton = function() {
+                    gameFrame.addEventListener("mousemove", changeStartColour);
+                    game.clearRect(210,450,74,25);
+                    game.fillStyle = "white";
+                    writeArial(game,"START","20px",213,473); //CHANGE HEIGHT OF "START" HERE
+                }
+                //this function is responsible for starting the game by calling "countdown()", which will in turn all the gameLoop and run the game
+                //it also removes all the mouse event listeners as we don't need them during the game and if they are there, they will interfere with the operation of the game
+                var startGame = function() {
+                    game.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+                    gameFrame.removeEventListener("mousedown", simulateButtonDown);
+                    gameFrame.removeEventListener("mouseup", startGame);
+                    gameFrame.removeEventListener("mousemove", changeStartColour);
+                    gameFrame.removeEventListener("mouseout", resetStartButton);
+                    countdown();
+                }
+                //this is where the magic happens for the mouseover START and change colour
+                var changeStartColour = function(event) {
+                    //if the mouse is in the box that is defined in thsi if statement condtion
+                    //change the colour to green and add mousedown and mouseup events to simulate clicking START and also actually start the game when you mouseup on START too
+                    if((event.clientX - gameFrame.getBoundingClientRect().left >= boxX && event.clientX - gameFrame.getBoundingClientRect().left <= boxX + boxWidth) &&
+                     (event.clientY - gameFrame.getBoundingClientRect().top >= boxY && event.clientY - gameFrame.getBoundingClientRect().top <= boxY + boxHeight)) {
+                        game.clearRect(boxX-2,boxY-2,boxWidth+4,boxHeight+4); //clear the START box
+                        game.fillStyle = "red"; //set fillStyle to red so start will be red
+                        writeArial(game, "START", "20px", 213, 470); //CHANGE HEIGHT OF "START" HERE
+                        gameFrame.addEventListener("mousedown", simulateButtonDown);
+                        gameFrame.addEventListener("mouseup", startGame);
+                    } else { //when we leave the box, reset START to being white
+                        game.clearRect(boxX-2,boxY-2,boxWidth+4,boxHeight+4);
+                        game.fillStyle = "white";
+                        writeArial(game, "START", "20px", 213, 473); //CHANGE HEIGHT OF "START" HERE
+                        gameFrame.removeEventListener("mousedown", simulateButtonDown);
+                        gameFrame.removeEventListener("mouseup", startGame);
+                    }
+                }
+                gameFrame.addEventListener("mousemove", changeStartColour);
+                gameFrame.addEventListener("mouseout", resetStartButton);
+            }
+
+            //writes the information in the very top
+            function writeGameIntro() {
+                //intantiate new variables for each line of text we want to fill
+                var line = [
+                    "This is a four person PONG game, as you can probably tell",
+                    "Use z & x to control TOP",
+                    "Use 1 & q to control LEFT",
+                    "Use n & m to control BOTTOM",
+                    "Use p & l to control RIGHT",
+                    "5 LIVES to start. Last person EXISTING wins. Good luck!"
+                ];
+                info.fillStyle = "white";
+                info.font = "12px arial";
+                for(var i = 0; i < line.length; i++) {
+                    info.fillText(line[i],0,20*(i+1));
+                }
+            }
+
+            //this keyState object will store a keyCode object and set it to true if the key is pressed down, and will be false if the key is lifted. This way we can keep track of multiple key inputs at once
+            var keyState = {};
+            var detectKeydown = function(event) {
+                keyState[event.keyCode || event.which] = true;
+            }
+            var detectKeyup = function(event) {
+                keyState[event.keyCode || event.which] = false;
+            }
+
+            //this function will count down from 3 and then start the game
+            function countdown() {
+                var sec = 3;
+                var interval = setInterval(function() {
+                    beep.play(); //play a been whenever we enter this loop
+                    game.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT); //clear the canvas
+                    score.clearRect(0,0,scoreBoard.width,scoreBoard.height); //clear the score canvas too, we don't want overlapping scores
+                    writeArial(game, "" + sec, "bold 40px", 240, 155); //write the seconds remaining so players will be ready
+                    initGame(); //initialize the game so players will know what the game looks like, while the countdown is going
+                    sec--; //decrement sec
+                    if(sec < 0) { //if seconds is less than 0, start the game
+                        game.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT); //clear the canvas
+                        clearInterval(interval); //clear the countdown interval
+                        initGame(); //initialize the game
+                        //add the keydown and keyup needed to play the game
+                        window.addEventListener("keydown", detectKeydown, true);
+                        window.addEventListener("keyup", detectKeyup, true);
+                        gameLoop(); //start the game
+                    }
+                }, 1000);
+            }
+
+            //these four variables will become the Paddle objects we will use later
+            var topP;
+            var leftP;
+            var botP;
+            var rightP;
+            function Paddle(x,y,width,height,lives) { //this is the object constructor for a new Paddle
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.lives = lives;
+                return this;
+            }
+            var ball;
+            function Ball(x,y,radius,dx,dy) { //object constructor for a new Ball
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.dx = dx;
+                this.dy = dy;
+                return this;
+            }
+
+            //initialize the game. In here, we will initialize all four paddles to new Paddle objects, and give them the correct values. We will also initialize the Ball, and set initial speed of the ball, both dx and dy
+            function initGame() {
+                topP = new Paddle(CANVAS_WIDTH/2-30,0,60,5,INITIAL_LIVES);
+                leftP = new Paddle(0,CANVAS_HEIGHT/2-30,5,60,INITIAL_LIVES);
+                botP = new Paddle(CANVAS_WIDTH/2-30,CANVAS_HEIGHT-5,60,5,INITIAL_LIVES);
+                rightP = new Paddle(CANVAS_WIDTH-5,CANVAS_HEIGHT/2-30,5,60,INITIAL_LIVES);
+                ball = new Ball(CANVAS_WIDTH/2,CANVAS_HEIGHT/2,5,INITIAL_LIVES);
+                drawPaddle(topP);
+                drawPaddle(leftP);
+                drawPaddle(botP);
+                drawPaddle(rightP);
+                drawBall(ball);
+                ball.dx = -7 + Math.random()*14;
+                if(ball.dx > -4 && ball.dx < 4) {
+                    if(ball.dx < 0) {
+                        ball.dx = ball.dx - 1;
+                    } else {
+                        ball.dx += 1;
+                    }
+                }
+                ball.dy = -7 + Math.random()*14;
+                if(ball.dy > -4 && ball.dy < 4) {
+                    if(ball.dy < 0) {
+                        ball.dy = ball.dy - 1;
+                    } else {
+                        ball.dy += 1;
+                    }
+                }
+                printScores(); //print out the scores
+            }
+
+            //this function will print out the scores in the "scoreBoard" canvas
+            function printScores() {
+                score.fillStyle = "white";
+                if(topP.lives < 1) { //if there is less than 1 life left, clear the score for top. Likewise with left, right, and bot
+                    score.clearRect(scoreBoard.width/2-52,8,10,10);
+                } else { //otherwise print out the respective lives
+                    writeArial(score,"TOP: " + topP.lives + " LIVES LEFT", "12px", scoreBoard.width/2-50, 10);
+                }
+                if(leftP.lives < 1) {
+                    score.clearRect(0,scoreBoard.height/2+5,10,10);
+                } else {
+                    writeArial(score,"LEFT: " + leftP.lives + " LIVES LEFT","12px",0,scoreBoard.height/2+5);
+                }
+                if(botP.lives < 1) {
+                    score.clearRect(scoreBoard.width/2-65,80,10,10);
+                } else {
+                    writeArial(score,"BOTTOM: " + botP.lives + " LIVES LEFT","12px",scoreBoard.width/2-65,80);
+                }
+                if(rightP.lives < 1) {
+                    score.clearRect(scoreBoard.width-122,scoreBoard.height/2+5,10,10);
+                } else {
+                    writeArial(score,"RIGHT: " + rightP.lives + " LIVES LEFT","12px",scoreBoard.width-122,scoreBoard.height/2+5);
+                }
+            }
+
+            function gameLoop() {
+                info.clearRect(0,0,infoBoard.width,infoBoard.height);
+                score.clearRect(0,0,scoreBoard.width,scoreBoard.height); //clear all the canvases that we will be using to draw things on
+                game.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+                checkWin(); //inside check win we check for the win condition, namely is there only one paddle left
+                drawPaddle(topP); //draw all the paddles
+                drawPaddle(leftP);
+                drawPaddle(botP);
+                drawPaddle(rightP);
+                drawBall(ball); //draw the ball
+                printScores(); //print the current scores
+                updateBall(); //update ball position
+                updatePaddles(); //update paddle positions
+                if(!win) { //if the win condition has not been met, animate the game
+                    window.requestAnimationFrame(gameLoop); //requestAnimationFrame will ensure that we have a smooth animation, when the ball and paddles move, they will be
+                                                            //refreshed at a rate of about 60fps
+                } else { //otherwise print the win screen
+                    printWinScreen();
+                }
+            }
+
+            //reset the ball to the middle and assign it a random dx and dy again. If dx or dy is in the range of -4 to 4, if it is negative, we will minus 1 to make it go faster. Likewise with positive, except we plus 1. This extends to dy as well with the same logic. This decreases the chance of getting a randomly super slow ball
+            function resetBall() {
+                peep.play();
+                ball.x = CANVAS_WIDTH/2;
+                ball.y = CANVAS_HEIGHT/2;
+                ball.dx = -7 + Math.random()*14;
+                if(ball.dx > -4 && ball.dx < 4) {
+                    if(ball.dx < 0) {
+                        ball.dx = ball.dx - 1;
+                    } else {
+                        ball.dx += 1;
+                    }
+                }
+                ball.dy = -7 + Math.random()*14;
+                if(ball.dy > -4 && ball.dy < 4) {
+                    if(ball.dy < 0) {
+                        ball.dy = ball.dy - 1;
+                    } else {
+                        ball.dy += 1;
+                    }
+                }
+            }
+
+            //although it is called removePaddle, this function actually changes the size of the paddle to the assigned width and height. This allows us to make the paddle into a "wall" that the ball can later bounce off of
+            function removePaddle(paddle, width, height) {
+                paddle.x = 0;
+                paddle.y = 0;
+                paddle.width = width;
+                paddle.height = height;
+            }
+
+            //this is a helper function that does exactly what it's name says, it adjusts dy, by adding a little kick up in speed of 0.5, and flips the direction
+            function adjustAndFlipBallDy() {
+                if(ball.dy > 0) {
+                    ball.dy += BALL_SPEED_INCR;
+                    ball.dy *= -1;
+                } else {
+                    ball.dy -= BALL_SPEED_INCR;
+                    ball.dy *= -1;
+                }
+            }
+
+            //just like the function above but with dx
+            function adjustAndFlipBallDx() {
+                if(ball.dx > 0) {
+                    ball.dx += BALL_SPEED_INCR;
+                    ball.dx *= -1;
+                } else {
+                    ball.dx -= BALL_SPEED_INCR;
+                    ball.dx *= -1;
+                }
+            }
+
+            function updateBall() {
+                if(ball.x <= leftP.width && ball.y >= leftP.y && ball.y <= leftP.y+leftP.height) { //if the ball hits the left paddle
+                    ball.dy += -1 + Math.random()*2; //this makes the ball bounce off at a slight angle, randomly
+                    plop.play(); //play a "ball made contact" sound
+                    adjustAndFlipBallDx();
+                } else if(ball.x >= CANVAS_WIDTH-rightP.width && ball.y >= rightP.y && ball.y <= rightP.y+rightP.height) { //if the ball hits the right paddle
+                    ball.dy += -1 + Math.random()*2;
+                    plop.play();
+                    adjustAndFlipBallDx();
+                } else if(ball.y <= topP.height && ball.x >= topP.x && ball.x <= topP.x+topP.width) { //if the ball hits the top paddle
+                    ball.dx += -1 + Math.random()*2;
+                    plop.play();
+                    adjustAndFlipBallDy();
+                } else if(ball.y >= CANVAS_HEIGHT-botP.height && ball.x>=botP.x && ball.x <= botP.x+botP.width) { //if the ball hits the bottom paddle
+                    ball.dx += -1 + Math.random()*2;
+                    plop.play();
+                    adjustAndFlipBallDy();
+                }
+
+                //check to see if the ball has left the screen
+                //if it has, depending on which wall it left from, decrement that player's lives
+                if(ball.x < -7) { //check if the ball left the left wall. We use -7 here to correct for errors that might happen if the ball moves too fast across the edge
+                    if(leftP.lives > 0) { //if there are still lives left
+                        resetBall();
+                        leftP.lives--;
+                    } else { //if there are no lives left
+                        resetBall();
+                        removePaddle(leftP,0,CANVAS_HEIGHT);
+                    }
+                } else if(ball.x > CANVAS_WIDTH+7) { //check if the ball left the right wall. The below have the same sort of logic for determining what to do
+                    if(rightP.lives > 0) {
+                        resetBall();
+                        rightP.lives--;
+                    } else {
+                        resetBall();
+                        removePaddle(rightP,0,CANVAS_HEIGHT);
+                    }
+                } else if(ball.y < -7) { //check if the ball left the top wall
+                    if(topP.lives > 0) {
+                        resetBall();
+                        topP.lives--;
+                    } else {
+                        resetBall();
+                        removePaddle(topP,CANVAS_WIDTH,0);
+                    }
+                } else if(ball.y > CANVAS_HEIGHT+7) { //check if the ball left the bottom wall
+                    if(botP.lives > 0) {
+                        resetBall();
+                        botP.lives--;
+                    } else {
+                        resetBall();
+                        removePaddle(botP,CANVAS_WIDTH,0);
+                    }
+                }
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+            }
+
+            //update the paddle positions based off which keys are pressed down so far
+            function updatePaddles() {
+                if(keyState[90]) { //here we will access the previously defined keyState object. Remember earlier when we do "keydown", we store that event keyCode inside the keyState as an attribute and set it to either true or false. Now we can access those individual attributes and see if they hold the value of true or false, and they will tell us which keys are pressed down
+                    if(topP.x > 0) {
+                        topP.x -= 7; //we use 7 because it seems like the right speed. 1 is way too slow
+                    }
+                } else if(keyState[88]) {
+                    if(topP.x+topP.width < CANVAS_WIDTH) {
+                        topP.x += 7;
+                    }
+                }
+                if(keyState[49]) {
+                    if(leftP.y > 0) {
+                        leftP.y -= 7;
+                    }
+                } else if(keyState[81]) {
+                    if(leftP.y+leftP.height < CANVAS_HEIGHT) {
+                        leftP.y += 7;
+                    }
+                }
+                if(keyState[78]) {
+                    if(botP.x > 0) {
+                        botP.x -= 7;
+                    }
+                } else if(keyState[77]) {
+                    if(botP.x+botP.width < CANVAS_WIDTH) {
+                        botP.x += 7;
+                    }
+                }
+                if(keyState[80]) {
+                    if(rightP.y > 0) {
+                        rightP.y -= 7;
+                    }
+                } else if(keyState[76]) {
+                    if(rightP.y+rightP.height < CANVAS_HEIGHT) {
+                        rightP.y += 7;
+                    }
+                }
+            }
+
+            function checkWin() {
+                //since in the removePaddle function we set either the width or the height of the paddle to 0 upon win, we can use that to detect if the game has been won. If three of the paddles have their respective height/width set as 0, we know that the last player has won and we can stop the ball, and declare win = true
+                if(botP.height == 0 && leftP.width == 0 && rightP.width == 0) {
+                    ball.dx = 0;
+                    ball.dy = 0;
+                    win = true;
+                } else if(topP.height == 0 && botP.height == 0 && rightP.width == 0) {
+                    ball.dx = 0;
+                    ball.dy = 0;
+                    win = true;
+                } else if(topP.height == 0 && leftP.width == 0 && botP.height == 0) {
+                    ball.dx = 0;
+                    ball.dy = 0;
+                    win = true;
+                } else if(topP.height == 0 && leftP.width == 0 && rightP.width == 0) {
+                    ball.dx = 0;
+                    ball.dy = 0;
+                    win = true;
+                }
+            }
+
+            function printWinScreen() { //write the "GAME OVER" at the very top, and append the RESET button to just below the game canvas
+                info.fillStyle = "white";
+                score.fillStyle = "white";
+                game.fillStyle = "white";
+                writeArial(info,"GAME OVER","72px",25,100);
+                var button = document.createElement("input");
+                button.type = "button";
+                button.value = "RESET";
+                button.id = "resetButton";
+                button.addEventListener("click", init); //attach the init function to the button when you click it. This way, literally everything will restart
+                document.body.appendChild(button);
+            }
+
+            //draw the paddle
+            function drawPaddle(paddle) {
+                game.fillStyle = "white";
+                game.fillRect(paddle.x,paddle.y,paddle.width,paddle.height);
+            }
+
+            //draw te ball
+            function drawBall(theBall) {
+                game.fillStyle = "white";
+                game.beginPath();
+                game.arc(theBall.x,theBall.y,theBall.radius,0,2*Math.PI);
+                game.closePath();
+                game.fill();
+            }
+
+            //write something on the canvas in arial font
+            function writeArial(context, message, size, x, y) {
+                context.font = size + " arial";
+                context.fillText(message, x, y);
+            }
+
+            function mute(event) {
+                if(event.which == 1) {
+                    if(beep.muted == false) {
+                        beep.muted = true;
+                    } else {
+                        beep.muted = false;
+                    }
+                    if(peep.muted == false) {
+                        peep.muted = true;
+                    } else {
+                        peep.muted = false;
+                    }
+                    if(plop.muted == false) {
+                        plop.muted = true;
+                    } else {
+                        plop.muted = false;
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
